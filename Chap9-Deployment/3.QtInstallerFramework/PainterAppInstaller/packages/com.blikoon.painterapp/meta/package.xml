@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package>
+    <DisplayName>PainterApp</DisplayName>
+    <Description>This is going to install PainterApp on you machine</Description>
+    <Version>0.1.0-1</Version>
+    <ReleaseDate>2019-07-17</ReleaseDate>
+    <Licenses>
+        <License name="Beer Public License Agreement" file="license.txt" />
+    </Licenses>
+    <Default>true</Default>
+</Package>

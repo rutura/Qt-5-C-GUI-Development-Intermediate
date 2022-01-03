@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>PainterApp</Name>
+    <Version>1.0.0</Version>
+    <Title>PainterApp Installer</Title>
+    <Publisher>Blikoon Technologies</Publisher>
+    <StartMenuDir>PainterApp</StartMenuDir>
+    <TargetDir>@HomeDir@/PainterApp</TargetDir>
+</Installer>

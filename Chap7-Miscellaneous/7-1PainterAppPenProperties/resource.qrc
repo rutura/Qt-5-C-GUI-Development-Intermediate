@@ -1,0 +1,38 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/ellipse.png</file>
+        <file>images/rectangle.png</file>
+        <file>images/star.png</file>
+        <file>images/quick.png</file>
+        <file>images/about.png</file>
+        <file>images/circle.png</file>
+        <file>images/close.png</file>
+        <file>images/cursor.png</file>
+        <file>images/eraser.png</file>
+        <file>images/open.png</file>
+        <file>images/pen.png</file>
+        <file>images/rectangle1.png</file>
+        <file>images/save.png</file>
+        <file>images/circle_active.png</file>
+        <file>images/circle_cursor.png</file>
+        <file>images/copyIcon.png</file>
+        <file>images/cursor_active.png</file>
+        <file>images/cutIcon.png</file>
+        <file>images/eraser_active.png</file>
+        <file>images/eraser_cursor.png</file>
+        <file>images/pasteIcon.png</file>
+        <file>images/pen_active.png</file>
+        <file>images/pen_cursor.png</file>
+        <file>images/pen_cursor1.png</file>
+        <file>images/pen_style_dashed.png</file>
+        <file>images/pen_style_dot_dashed.png</file>
+        <file>images/pen_style_dotted.png</file>
+        <file>images/pen_style_solid.png</file>
+        <file>images/rectangle_cursor.png</file>
+        <file>images/rectangle1_active.png</file>
+        <file>images/redoIcon.png</file>
+        <file>images/star_active.png</file>
+        <file>images/star_cursor.png</file>
+        <file>images/undoIcon.png</file>
+    </qresource>
+</RCC>

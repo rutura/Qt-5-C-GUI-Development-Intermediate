@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/learnqt.png</file>
+    </qresource>
+</RCC>

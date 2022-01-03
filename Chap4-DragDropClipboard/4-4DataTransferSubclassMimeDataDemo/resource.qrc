@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/cpp.png</file>
+        <file>images/qt.png</file>
+        <file>images/terminal.png</file>
+    </qresource>
+</RCC>

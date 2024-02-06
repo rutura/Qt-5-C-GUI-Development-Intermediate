@@ -21,7 +21,7 @@ private slots:
 
     void on_removeFileDir_clicked();
 
-private:
+  private:
     Ui::Widget *ui;
     QFileSystemModel * model;
 };

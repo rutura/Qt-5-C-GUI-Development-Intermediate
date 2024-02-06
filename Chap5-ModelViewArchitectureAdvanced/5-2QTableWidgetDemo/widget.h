@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #include <QWidget>
+#include "person.h"
 
 namespace Ui {
 class Widget;
@@ -18,7 +19,8 @@ public:
 private:
     void newRow();
     Ui::Widget *ui;
-    QVector<QVector<QString>> table;
+    // QVector<QVector<QString>> table;
+    QVector<Person> table;
 };
 
 #endif // WIDGET_H

@@ -41,5 +41,10 @@ void Widget::on_listView_clicked(const QModelIndex &index)
 void Widget::on_matchStringLineEdit_textChanged(const QString &arg1)
 {
     Q_UNUSED(arg1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     proxyModel->setFilterRegExp(ui->matchStringLineEdit->text());
+#else
+    // qDebug() << "[Error] Obsolete member setFilterRegExp of QSortFilterProxyModel in Qt6";
+    proxyModel->setFilterRegularExpression(ui->matchStringLineEdit->text());
+#endif
 }

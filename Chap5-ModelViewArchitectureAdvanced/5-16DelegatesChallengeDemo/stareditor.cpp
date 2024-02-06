@@ -40,7 +40,7 @@ void StarEditor::mouseReleaseEvent(QMouseEvent *event)
 
 void StarEditor::mouseMoveEvent(QMouseEvent *event)
 {
-    int rating = event->x()/20;
+    int rating = event->position().x()/20;
 
     if((rating != starRating) && (rating <6)){
         starRating = rating;

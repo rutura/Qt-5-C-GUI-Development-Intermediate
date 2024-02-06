@@ -1,6 +1,7 @@
 #include "personmodel.h"
 #include <QTextStream>
 #include <QDebug>
+#include <QFile>
 
 PersonModel::PersonModel(QObject *parent) : QAbstractItemModel(parent)
 {
@@ -94,8 +95,9 @@ QVariant PersonModel::headerData(int section, Qt::Orientation orientation, int r
 
 Qt::ItemFlags PersonModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid())
-        return nullptr;
+  if (!index.isValid()){
+    return Qt::ItemFlags{};
+  }
     return QAbstractItemModel::flags(index);
 }
 

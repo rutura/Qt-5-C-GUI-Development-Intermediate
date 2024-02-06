@@ -176,6 +176,7 @@ Qt::ItemFlags PersonModel::flags(const QModelIndex &index) const
 
 bool PersonModel::insertRows(int row, int count, const QModelIndex &parent)
 {
+  Q_UNUSED(parent);
     beginInsertRows(QModelIndex(), row, row+count-1);
 
     for (int i = 0; i < count; ++i) {
@@ -187,6 +188,10 @@ bool PersonModel::insertRows(int row, int count, const QModelIndex &parent)
 
 bool PersonModel::removeRows(int row, int count, const QModelIndex &parent)
 {
+  Q_UNUSED(parent);
+  if(persons.isEmpty()){
+    return false;
+  }
     beginRemoveRows(QModelIndex(), row, row+count-1);
 
     for (int i = 0; i < count; ++i) {

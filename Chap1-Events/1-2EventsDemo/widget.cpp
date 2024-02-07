@@ -35,6 +35,7 @@ void Widget::mouseMoveEvent(QMouseEvent *event)
 
 void Widget::closeEvent(QCloseEvent *event)
 {
+  Q_UNUSED(event);
     qDebug() << "Widget about to close";
     //event->ignore();
 }
@@ -54,13 +55,15 @@ void Widget::contextMenuEvent(QContextMenuEvent *event)
 
 }
 
-void Widget::enterEvent(QEvent *event)
+void Widget::enterEvent(QEnterEvent *event)
 {
+  Q_UNUSED(event);
     qDebug() << "Enter event";
 }
 
 void Widget::leaveEvent(QEvent *event)
 {
+  Q_UNUSED(event);
     qDebug() << "Leave event";
 }
 
@@ -88,9 +91,9 @@ void Widget::keyPressEvent(QKeyEvent *event)
 
 void Widget::wheelEvent(QWheelEvent *event)
 {
-    qDebug() << "Weel Event Delta : " << event->delta();
-    qDebug() << " x : " << event->x() << ", y : " <<event->y();
-    qDebug() << " Orientation : " << event->orientation();
+  qDebug() << "Weel Event Delta : " << (event->hasPixelDelta() ? event->pixelDelta(): QPoint(0,0));
+    qDebug() << " x : " << event->position().x() << ", y : " <<event->position().y();
+    qDebug() << " Orientation : " << event->angleDelta();
 }
 
 void Widget::resizeEvent(QResizeEvent *event)
@@ -101,6 +104,7 @@ void Widget::resizeEvent(QResizeEvent *event)
 
 void Widget::paintEvent(QPaintEvent *event)
 {
+  Q_UNUSED(event);
     qDebug() << "Paint event triggered";
 }
 

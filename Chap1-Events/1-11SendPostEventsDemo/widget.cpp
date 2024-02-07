@@ -21,7 +21,7 @@ Widget::~Widget()
 void Widget::on_button2_clicked()
 {
 
-    QMouseEvent * mouseEvent = new QMouseEvent(QEvent::MouseButtonPress, QPointF(10,10),
+    QMouseEvent * mouseEvent = new QMouseEvent(QEvent::MouseButtonPress, QPointF(10,10),QPointF(10,10),
                                              Qt::LeftButton, Qt::LeftButton,Qt::NoModifier);
 
     //Send

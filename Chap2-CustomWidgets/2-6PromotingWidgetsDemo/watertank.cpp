@@ -25,6 +25,7 @@ WaterTank::WaterTank(QWidget *parent) : QWidget(parent),
 
 void WaterTank::paintEvent(QPaintEvent *event)
 {
+  Q_UNUSED(event);
     //Set up painter
     QPen mPen;
     mPen.setColor(Qt::black);
@@ -50,7 +51,7 @@ QSize WaterTank::sizeHint() const
 
 void WaterTank::wheelEvent(QWheelEvent *event)
 {
-    if(event->delta() < 0 && (waterHeight > 10)){
+    if(event->angleDelta().x() < 0 && (waterHeight > 10)){
         waterHeight -= 10;
         update();
     }

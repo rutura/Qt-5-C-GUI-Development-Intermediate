@@ -21,7 +21,7 @@ QStringList PixmapMime::formats() const
     return  mimeFormats;
 }
 
-QVariant PixmapMime::retrieveData(const QString &mimetype, QVariant::Type preferredType) const
+QVariant PixmapMime::retrieveData(const QString &mimetype, QMetaType preferredType) const
 {
 
     if(mimetype == "text/plain"){

@@ -28,7 +28,7 @@ public:
     QStringList formats() const override;
 
 protected:
-    QVariant retrieveData(const QString &mimetype, QVariant::Type preferredType) const override;
+    QVariant retrieveData(const QString &mimetype, QMetaType preferredType) const override;
 };
 
 #endif // PIXMAPMIME_H

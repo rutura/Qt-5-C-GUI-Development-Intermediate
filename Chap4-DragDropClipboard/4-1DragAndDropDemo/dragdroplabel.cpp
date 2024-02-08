@@ -27,6 +27,7 @@ void DragDropLabel::dragMoveEvent(QDragMoveEvent *event)
 
 void DragDropLabel::dragLeaveEvent(QDragLeaveEvent *event)
 {
+  Q_UNUSED(event);
     clear();
 }
 

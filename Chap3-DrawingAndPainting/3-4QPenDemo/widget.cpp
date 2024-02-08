@@ -15,7 +15,7 @@ Widget::~Widget()
 }
 
 void Widget:: paintEvent(QPaintEvent *event) {
-
+  Q_UNUSED(event);
     QPainter painter(this);
     QPen mPen;// No pen style set , default is Qt::SolidLine
     mPen.setColor(Qt::black);

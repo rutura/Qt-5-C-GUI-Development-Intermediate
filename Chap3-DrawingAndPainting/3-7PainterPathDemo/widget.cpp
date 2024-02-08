@@ -1,6 +1,7 @@
 #include "widget.h"
 #include "ui_widget.h"
 #include <QPainter>
+#include <QPainterPath>
 
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
@@ -16,7 +17,7 @@ Widget::~Widget()
 
 void Widget::paintEvent(QPaintEvent *event)
 {
-
+  Q_UNUSED(event);
     QPainter painter(this);
 
     QPainterPath path;

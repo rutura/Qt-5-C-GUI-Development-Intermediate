@@ -98,6 +98,7 @@ void Widget::on_penStyleCombobox_activated(int index)
 
 void Widget::on_penCapCombobox_activated(int index)
 {
+  Q_UNUSED(index);
     penChanged();
 }
 

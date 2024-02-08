@@ -15,7 +15,7 @@ Widget::~Widget()
 }
 
 void Widget:: paintEvent(QPaintEvent *event){
-
+  Q_UNUSED(event);
     QPainter painter(this);
     QPen mPen;
     mPen.setWidth(5);
@@ -64,20 +64,5 @@ void Widget:: paintEvent(QPaintEvent *event){
     mPen.setColor(Qt::yellow);
     painter.setPen(mPen);
     painter.drawRect(100,100,200,200);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

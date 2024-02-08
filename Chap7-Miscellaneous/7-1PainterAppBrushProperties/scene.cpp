@@ -8,6 +8,7 @@
 #include "resizablerectitem.h"
 #include "resizablestaritem.h"
 #include <QDebug>
+#include <QFile>
 
 Scene::Scene(QObject *parent) : QGraphicsScene(parent),
     tool(Cursor),

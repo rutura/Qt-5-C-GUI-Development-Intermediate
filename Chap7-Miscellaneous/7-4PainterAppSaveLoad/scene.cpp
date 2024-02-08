@@ -10,6 +10,7 @@
 #include "resizablerectitem.h"
 #include "resizablestaritem.h"
 #include <QDebug>
+#include <QFile>
 
 
 const QString MimeType = "application/com.blikoontech.painterapp";

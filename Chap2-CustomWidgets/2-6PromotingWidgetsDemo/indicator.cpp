@@ -42,7 +42,7 @@ void Indicator::activateDanger()
 
 void Indicator::paintEvent(QPaintEvent *event)
 {
-
+  Q_UNUSED(event);
     QPen mPen;
     mPen.setWidth(3);
     mPen.setColor(Qt::black);

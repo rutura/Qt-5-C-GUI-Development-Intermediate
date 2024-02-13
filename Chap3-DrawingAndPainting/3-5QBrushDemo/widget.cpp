@@ -14,7 +14,7 @@ Widget::~Widget()
     delete ui;
 }
 void Widget::paintEvent(QPaintEvent *event) {
-
+  Q_UNUSED(event);
     QPainter painter(this);
 
 

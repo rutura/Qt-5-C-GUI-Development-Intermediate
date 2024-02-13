@@ -17,6 +17,7 @@ Widget::~Widget()
 
 void Widget::paintEvent(QPaintEvent *event)
 {
+  Q_UNUSED(event);
     QPen mPen(Qt::red);
     mPen.setWidth(3);
 

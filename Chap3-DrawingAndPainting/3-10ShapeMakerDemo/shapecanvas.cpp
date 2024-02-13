@@ -22,6 +22,7 @@ QSize ShapeCanvas::sizeHint() const
 
 void ShapeCanvas::paintEvent(QPaintEvent *event)
 {
+  Q_UNUSED(event);
     QPainter painter(this);
 
     //Polygon

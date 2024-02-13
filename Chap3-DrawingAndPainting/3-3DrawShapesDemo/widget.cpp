@@ -15,7 +15,7 @@ Widget::~Widget()
 }
 
 void Widget::paintEvent(QPaintEvent *event) {
-
+  Q_UNUSED(event);
     QPainter painter(this);
     QPen mPen;
     mPen.setColor(Qt::black);
@@ -33,7 +33,7 @@ void Widget::paintEvent(QPaintEvent *event) {
 
     //Round rect
     painter.setBrush(Qt::gray);
-    painter.drawRoundRect(330 , 10,200,100 );
+    painter.drawRoundedRect(330 , 10,200,100 , 20,20);
 
     //Draw lines
     painter.drawLine(550,30,650,30);

@@ -194,6 +194,7 @@ void Widget::drawCarV2(QPainter *painter, QRectF rect, QColor tireColor)
 
 void Widget::paintEvent(QPaintEvent *event)
 {
+  Q_UNUSED(event);
     QPainter painter(this);
     drawCar(&painter);
     drawCarV2(&painter,QRectF(500,100,200,200),Qt::red);

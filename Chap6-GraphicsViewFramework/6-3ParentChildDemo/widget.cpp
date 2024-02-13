@@ -56,6 +56,6 @@ void Widget::on_showHideButton_clicked()
 void Widget::on_removeItem_clicked()
 {
     scene->removeItem(rect1);
-    delete rect1;
+    // delete rect1;
 
 }

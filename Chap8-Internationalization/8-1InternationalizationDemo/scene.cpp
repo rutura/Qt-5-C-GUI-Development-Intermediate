@@ -11,6 +11,7 @@
 #include "resizablestaritem.h"
 #include "commands.h"
 #include <QDebug>
+#include <QFile>
 
 
 const QString MimeType = "application/com.blikoontech.painterapp";

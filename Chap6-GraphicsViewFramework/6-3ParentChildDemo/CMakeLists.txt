@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(5-1QListWidgetDemo VERSION 0.1 LANGUAGES CXX)
+project(6-3ParentChildDemo VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)

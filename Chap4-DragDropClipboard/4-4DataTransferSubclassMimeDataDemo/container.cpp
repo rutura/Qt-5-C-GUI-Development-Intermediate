@@ -57,7 +57,7 @@ void Container::mouseMoveEvent(QMouseEvent *event)
             if(!child)
                 return;
 
-            QPixmap mPixmap = * child->pixmap();
+            QPixmap mPixmap = child->pixmap();
 
 /*
             QByteArray ba;
@@ -156,7 +156,7 @@ void Container::dropEvent(QDropEvent *event)
 
         QLabel * newLabel = new QLabel(this);
         newLabel->setPixmap(mPixmap);
-        newLabel->move(event->pos() - offset);
+        newLabel->move(event->position().toPoint() - offset);
         newLabel->show();
         newLabel->setAttribute(Qt::WA_DeleteOnClose);
 
@@ -224,7 +224,7 @@ void Container::dropEvent(QDropEvent *event)
 void Container::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
-    painter.drawRoundRect(0,5,width()-10, height()-10,3,3);
+    painter.drawRoundedRect(0,5,width()-10, height()-10,3,3);
 
     QWidget::paintEvent(event);
 

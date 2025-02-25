@@ -144,7 +144,7 @@ The application uses Qt's QColor class to manage colors:
 - The `name()` method is used to get the hex code for styling
 - QColor objects are passed through signals
 
-## Improvements for a Real Application
+## Exercise
 
 1. **Refactored Button Creation**: The current implementation has duplicate code for each button. A more maintainable approach would use loops:
 

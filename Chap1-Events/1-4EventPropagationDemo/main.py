@@ -1,11 +1,9 @@
 import sys
 from PySide6.QtWidgets import QApplication
-from main_widget import Widget
+from widget import Widget
 
 def main():
-    """Main application entry point."""
     app = QApplication(sys.argv)
-    
     window = Widget()
     window.show()
     

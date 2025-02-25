@@ -193,25 +193,6 @@ for i in range(len(points)):
     points[i] = QPointF(points[i].x(), points[i].y() + 100.0)
 ```
 
-## From C++ to PySide6
-
-This project has been ported from Qt/C++ to PySide6. Key translations include:
-
-1. **QVector Usage**:
-   - C++: `QVector<qreal> dashes;`
-   - Python: Python list `dashes = [1, 4, 3, 4, 9, 4, 27, 4, 9, 4]`
-
-2. **Point Array Syntax**:
-   - C++: `QPointF points[4] = {...};`
-   - Python: Python list `points = [QPointF(...), ...]`
-
-3. **Polygon Creation**:
-   - C++: `painter.drawPolygon(points, 4);`
-   - Python: `polygon = QPolygonF(points); painter.drawPolygon(polygon)`
-
-4. **Transparency**:
-   - C++: Often not explicitly set
-   - Python: `painter.setBrush(Qt.transparent)` for clarity
 
 ## Practical Applications
 

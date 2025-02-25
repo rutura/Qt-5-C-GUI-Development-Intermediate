@@ -1,6 +1,6 @@
 from typing import Optional
-from PySide6.QtCore import Qt, QPoint
 from PySide6.QtWidgets import QWidget, QMenu
+from PySide6.QtCore import QPoint, Qt
 from PySide6.QtGui import (
     QMouseEvent, 
     QCloseEvent, 
@@ -11,13 +11,13 @@ from PySide6.QtGui import (
     QResizeEvent,
     QPaintEvent
 )
+from ui_widget import Ui_Widget
 
 class Widget(QWidget):
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
-        # Set window properties
-        self.setGeometry(0, 0, 400, 300)
-        self.setWindowTitle("Widget")
+        self.ui = Ui_Widget()
+        self.ui.setupUi(self)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
         print(f"Widget, Mouse Pressed at {event.pos()}")
@@ -47,7 +47,7 @@ class Widget(QWidget):
     def enterEvent(self, event: QEnterEvent) -> None:
         print("Enter event")
 
-    def leaveEvent(self, event: QEnterEvent) -> None:
+    def leaveEvent(self, event) -> None:
         print("Leave event")
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
@@ -55,6 +55,8 @@ class Widget(QWidget):
             print(f"Control + {event.text()}")
         if event.modifiers() & Qt.AltModifier:
             print(f"Alt + {event.text()}")
+
+        # Detect Shift+A
         if event.modifiers() & Qt.ShiftModifier:
             if event.key() == Qt.Key.Key_A:
                 print("Shift + A detected")

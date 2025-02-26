@@ -1,5 +1,81 @@
+# Qt specific
 build-*/
 *.user
 *.user.*
 *.autosave
 *build-*/
+.qmake.stash
+*.pro.user
+*.qbs.user
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+*.qmlc
+*.jsc
+Makefile*
+*build-*
+*.qm
+.qt_for_python/
+.qt/
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+
+# Virtual Environment
+venv/
+.env
+.venv
+ENV/
+.uvenv/
+.winven/
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+.project
+.pydevproject
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# Generated UI files
+*_ui.py
+*_rc.py
+
+# Compiled Resources
+resources.py
+resources_rc.py
+
+# Debug/Release folders
+debug/
+release/
+
+# OS specific
+.DS_Store
+.directory
+.thumbnails
+desktop.ini
+Thumbs.db

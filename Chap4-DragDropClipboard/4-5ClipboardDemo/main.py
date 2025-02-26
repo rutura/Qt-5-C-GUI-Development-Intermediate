@@ -1,0 +1,15 @@
+import sys
+from PySide6.QtWidgets import QApplication
+from widget import Widget
+
+def main():
+    app = QApplication(sys.argv)
+    window = Widget()
+    window.setWindowTitle("Clipboard Image Paste Demo")
+    window.resize(600, 400)
+    window.show()
+    
+    return app.exec()
+
+if __name__ == "__main__":
+    sys.exit(main())

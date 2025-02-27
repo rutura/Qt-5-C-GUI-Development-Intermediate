@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QFileDialog, QColorDialog
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QPointF
 from PySide6.QtGui import QIcon, QPixmap, QColor
 from ui_mainwindow import Ui_MainWindow
 from scene import Scene
@@ -18,6 +18,10 @@ class MainWindow(QMainWindow):
         
         # Create scene
         self.scene = Scene(self)
+        
+        # Create view
+        self.view = View(self)
+        self.view.setScene(self.scene)
         
         # Create shape list
         self.shape_map = {}
@@ -39,14 +43,10 @@ class MainWindow(QMainWindow):
         color_picker = ColorPicker(self)
         color_picker.colorChanged.connect(self.on_colorpicker_color_changed)
         
-        # Create view
-        view = View(self)
-        view.setScene(self.scene)
-        
         # Add widgets to layout
         self.ui.colorPickerLayout.addWidget(color_picker)
         self.ui.listLayout.addWidget(shape_list)
-        self.ui.viewLayout.addWidget(view)
+        self.ui.viewLayout.addWidget(self.view)
         
         # Set initial color buttons
         pen_color_qss = f"background-color: {self.scene.get_pen_color().name()}"
@@ -73,6 +73,12 @@ class MainWindow(QMainWindow):
         self.ui.brushStyleComboBox.addItem("Vertical Lines")
         self.ui.brushStyleComboBox.addItem("Cross Pattern")
         
+        # Set up canvas properties
+        self.ui.showgridCheckbox.setChecked(self.view.draw_grid_lines)
+        self.ui.sceneBackgroundButton.setStyleSheet(
+            f"background-color: {self.view.background_color.name()}"
+        )
+        
         # Connect actions
         self.ui.actionCursor.triggered.connect(self.on_action_cursor_triggered)
         self.ui.actionStar.triggered.connect(self.on_action_star_triggered)
@@ -89,6 +95,11 @@ class MainWindow(QMainWindow):
         self.ui.penStyleCombobox.activated.connect(self.on_pen_style_combobox_activated)
         self.ui.brushColorButton.clicked.connect(self.on_brush_color_button_clicked)
         self.ui.brushStyleComboBox.activated.connect(self.on_brush_style_combo_box_activated)
+        
+        # Connect canvas property UI elements
+        self.ui.showgridCheckbox.toggled.connect(self.on_showgrid_checkbox_toggled)
+        self.ui.centerSceneButton.clicked.connect(self.on_center_scene_button_clicked)
+        self.ui.sceneBackgroundButton.clicked.connect(self.on_scene_background_button_clicked)
         
     def on_action_cursor_triggered(self):
         """Set cursor tool"""
@@ -181,6 +192,22 @@ class MainWindow(QMainWindow):
             self.scene.set_brush_style(Qt.BrushStyle.VerPattern)
         elif index == 4:  # Cross Pattern
             self.scene.set_brush_style(Qt.BrushStyle.CrossPattern)
+    
+    def on_showgrid_checkbox_toggled(self, checked):
+        """Handle show grid checkbox toggle"""
+        self.view.set_draw_grid_lines(checked)
+    
+    def on_center_scene_button_clicked(self):
+        """Handle center scene button click"""
+        self.view.centerOn(QPointF(0, 0))
+    
+    def on_scene_background_button_clicked(self):
+        """Handle scene background button click"""
+        color = QColorDialog.getColor(self.view.background_color, self)
+        
+        if color.isValid():
+            self.view.set_background_color(color)
+            self.ui.sceneBackgroundButton.setStyleSheet(f"background-color: {color.name()}")
     
     def on_colorpicker_color_changed(self, color):
         """Handle color changed from color picker"""

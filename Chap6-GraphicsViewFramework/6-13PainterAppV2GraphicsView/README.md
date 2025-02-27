@@ -1,6 +1,6 @@
-# PySide6 Draggable Shapes Application - Implementation Guide
+# PySide6 Draggable Shapes Application
 
-This guide explains how to implement a drawing application with Qt's Graphics View Framework that allows users to create, resize, and modify shapes with drag and drop functionality. The application demonstrates advanced graphics concepts in PySide6.
+This document explains how to implement a drawing application with Qt's Graphics View Framework that allows users to create, resize, and modify shapes with drag and drop functionality. The application demonstrates advanced graphics concepts in PySide6.
 
 ## Project Overview
 
@@ -18,8 +18,8 @@ This application demonstrates:
 draggable_shapes_app/
 │
 ├── main.py                  # Application entry point
-├── mainwindow.py            # Main window implementation (if using QMainWindow)
-├── widget.py                # Main widget implementation (if using QWidget directly)
+├── mainwindow.py            # Main window implementation
+├── ui_mainwindow.py         # Generated UI from mainwindow.ui
 ├── scene.py                 # Custom graphics scene
 ├── handleitem.py            # Resize handles for shapes
 ├── resizablehandlerect.py   # Base class for resizable items
@@ -30,15 +30,14 @@ draggable_shapes_app/
 ├── shapelist.py             # List widget for shape selection
 ├── colorlistwidget.py       # List widget for color selection
 ├── resource.qrc             # Resource file for images
-├── resource_rc.py           # Generated resource module
-└── ui_widget.py             # Generated UI file
+└── resource_rc.py           # Generated resource module
 ```
 
 ## Building and Running the Project
 
 1. Generate UI Python files:
    ```bash
-   pyside6-uic widget.ui -o ui_widget.py
+   pyside6-uic mainwindow.ui -o ui_mainwindow.py
    ```
 
 2. Generate resource Python files:
@@ -51,9 +50,22 @@ draggable_shapes_app/
    python main.py
    ```
 
-## Implementation Details
+## Key Concepts
 
-### Resizable Items Architecture
+### 1. Multiple Inheritance with Qt Classes
+
+The resizable items use multiple inheritance to combine Qt's graphics items with custom resize functionality:
+
+```python
+class ResizableRectItem(QGraphicsRectItem, ResizableHandleRect):
+    def __init__(self):
+        QGraphicsRectItem.__init__(self)
+        ResizableHandleRect.__init__(self)
+```
+
+This design pattern allows reusing the resize functionality across different shape types.
+
+### 2. Resizable Items Architecture
 
 The application implements a flexible architecture for resizable items:
 
@@ -66,54 +78,14 @@ The application implements a flexible architecture for resizable items:
 
 3. **Specific Shape Classes**: Each shape (rectangle, ellipse, star, pixmap) inherits from both `QGraphicsRectItem` and `ResizableHandleRect` to combine Qt's graphics capabilities with resizing functionality.
 
-```python
-class ResizableHandleRect:
-    """Base class for resizable items with handles at the corners"""
-    
-    def __init__(self):
-        # Initialize handles and state
-        
-    def draw_handles(self):
-        """Draw handles at the corners of the item"""
-        
-    def draw_handles_if_necessary(self):
-        """Draw handles if the item is selected, remove them otherwise"""
-        
-    # Abstract methods
-    def selector_frame_bounds(self):
-        """Returns the bounds of the selector frame"""
-        
-    def set_selector_frame_bounds(self, bounds_rect):
-        """Sets the bounds of the selector frame"""
-```
-
-### Drag and Drop System
+### 3. Drag and Drop System
 
 The application implements two types of drag and drop operations:
 
 1. **Shape Creation**: Dragging a shape from the shape list creates a new shape on the canvas.
-   ```python
-   class ShapeList(QListWidget):
-       def startDrag(self, supported_actions):
-           # Create drag with shape type data
-   ```
-
 2. **Color Application**: Dragging a color from the color list and dropping it on a shape changes the shape's color.
-   ```python
-   class ColorListWidget(QListWidget):
-       def startDrag(self, supported_actions):
-           # Create drag with color data
-   ```
 
-   The shapes accept the color drop with:
-   ```python
-   def dropEvent(self, event):
-       """Handle drop events for color changes"""
-       if event.mimeData().hasColor():
-           # Apply the color to the shape
-   ```
-
-### Drawing Tools
+### 4. Drawing Tools
 
 The scene implements multiple drawing tools:
 
@@ -122,24 +94,7 @@ The scene implements multiple drawing tools:
 3. **Shape Tools**: For drawing rectangles, ellipses, and stars
 4. **Eraser Tool**: For erasing drawn elements
 
-The tool system is implemented with an enumeration and specialized event handling:
-
-```python
-class Scene(QGraphicsScene):
-    # Tool type enumeration
-    Cursor = 0
-    Pen = 1
-    Rect = 2
-    Ellipse = 3
-    Star = 4
-    QtQuick = 5
-    Eraser = 6
-    
-    def mousePressEvent(self, event):
-        # Handle based on current tool
-```
-
-### Custom Shape Implementation
+### 5. Custom Shape Implementation
 
 The star shape demonstrates how to create custom shapes using QPainterPath:
 
@@ -156,61 +111,108 @@ def star_from_rect(self, m_rect_f):
     return path
 ```
 
-## Key Concepts
+## Implementation Details
 
-### Multiple Inheritance with Qt Classes
+### Main Window
 
-The resizable items use multiple inheritance to combine Qt's graphics items with custom resize functionality:
+The main window sets up the UI, creates the scene and view, and connects the toolbar actions to the appropriate scene tools.
 
 ```python
-class ResizableRectItem(QGraphicsRectItem, ResizableHandleRect):
+class MainWindow(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        
+        # Create scene
+        self.scene = Scene(self)
+        
+        # Create shape list and color list
+        # ...
+        
+        # Connect toolbar actions
+        self.ui.actionCursor.triggered.connect(self.on_action_cursor_triggered)
+        # ...
+```
+
+### Scene
+
+The scene manages drawing operations, tool selection, and object creation:
+
+```python
+class Scene(QGraphicsScene):
+    # Tool type enumeration
+    Cursor = 0
+    Pen = 1
+    Rect = 2
+    Ellipse = 3
+    Star = 4
+    QtQuick = 5
+    Eraser = 6
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.tool = self.Cursor
+        # ...
+```
+
+### Resizable Handle Rectangle
+
+The `ResizableHandleRect` class is a mixin that provides resizing functionality to shape items:
+
+```python
+class ResizableHandleRect:
     def __init__(self):
-        QGraphicsRectItem.__init__(self)
-        ResizableHandleRect.__init__(self)
+        self.handle_list = []
+        self.handles_added_to_scene = False
+        self.owner_item = None
+        
+    def draw_handles(self):
+        # Create and position handles
+        # ...
+        
+    def draw_handles_if_necessary(self):
+        # Draw handles when selected, remove when not
+        # ...
 ```
 
-This design pattern allows reusing the resize functionality across different shape types.
+### Handle Item
 
-### Dynamic Object Creation and Management
+The `HandleItem` class implements corner handles that can be dragged to resize their parent item:
 
-The scene dynamically creates, tracks, and removes objects based on user actions:
-
-1. **Temporary Objects**: When drawing a shape, a temporary object is shown during the drag operation:
-   ```python
-   def draw_shape_to(self, end_point):
-       # Remove previous temporary item
-       # Create new temporary item
-   ```
-
-2. **Finalized Objects**: When the mouse is released, the temporary object is replaced with a permanent one:
-   ```python
-   def mouseReleaseEvent(self, event):
-       # Remove temporary item
-       # Create permanent item
-   ```
-
-### MIME Data for Drag and Drop
-
-The application uses QMimeData to transfer information during drag and drop operations:
-
-1. **Custom Properties**: For shape creation
-   ```python
-   mime_data.setProperty("Key", key)
-   ```
-
-2. **Color Data**: For color application
-   ```python
-   mime_data.setColorData(color)
-   ```
-
-### Scene Coordinate System
-
-The application uses a centered coordinate system for the scene:
 ```python
-self.setSceneRect(-800, -400, 1600, 800)
+class HandleItem(QGraphicsRectItem):
+    # Position enum
+    TopLeft = 0
+    TopRight = 1
+    BottomRight = 2
+    BottomLeft = 3
+    
+    def __init__(self, position):
+        super().__init__()
+        self.handle_position = position
+        self.setFlag(QGraphicsRectItem.GraphicsItemFlag.ItemIsMovable)
+    
+    def mouseMoveEvent(self, event):
+        # Resize parent based on handle position
+        # ...
 ```
 
-This makes it easier to position items relative to the center of the view.
+### Drag and Drop Lists
+
+The application uses custom list widgets to support drag and drop operations:
+
+```python
+class ShapeList(QListWidget):
+    def startDrag(self, supported_actions):
+        items = self.selectedItems()
+        if len(items) > 0:
+            drag = QDrag(self)
+            mime_data = QMimeData()
+            
+            # Set up drag data
+            # ...
+```
 
 ## Best Practices
 
@@ -221,3 +223,40 @@ This makes it easier to position items relative to the center of the view.
    - `ResizableHandleRect`: Handles resizing behavior
    - Specific shape classes: Implement drawing and interaction for each shape type
    - List widgets: Handle selection and dragging of colors and shapes
+
+2. **Reusable Components**
+
+   The architecture allows for easy extension:
+   - Adding new shape types by creating new resizable item classes
+   - Adding new tools by extending the Scene class
+
+3. **Event Handling**
+
+   The application shows proper event handling techniques:
+   - Using mouse events to implement drawing tools
+   - Using drag and drop events for interacting between components
+   - Using key events for operations like delete
+
+4. **Memory Management**
+
+   The application properly manages graphics items:
+   - Removing temporary items when they're no longer needed
+   - Deleting handles when deselecting items
+
+## Usage Workflow
+
+1. Select a drawing tool from the toolbar (cursor, pen, shape tools, eraser)
+2. Create shapes by:
+   - Dragging shapes from the shape list
+   - Drawing shapes directly on the canvas
+3. Select shapes with the cursor tool
+4. Modify shapes:
+   - Move by dragging
+   - Resize using the corner handles
+   - Change color by dragging a color from the color list
+4. Add external images using the "Add Image" option
+5. Delete selected items using the Delete key
+
+## Conclusion
+
+This application demonstrates advanced graphics techniques in PySide6, including custom graphics items, interactive drawing tools, and drag and drop operations. The architecture is designed to be extensible and maintainable through good separation of concerns and reusable components.

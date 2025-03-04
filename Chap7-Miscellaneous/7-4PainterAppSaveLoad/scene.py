@@ -1068,21 +1068,73 @@ class Scene(QGraphicsScene):
         file = QFile(filename)
         
         if not file.open(QIODevice.OpenModeFlag.WriteOnly):
+            print(f"Error: Could not open file {filename} for writing")
             return
         
         data_stream = QDataStream(file)
-        self.write_items_to_data_stream(data_stream, self.items())
+        
+        # Set compatible version
+        data_stream.setVersion(QDataStream.Version.Qt_5_12)
+        
+        try:
+            self.write_items_to_data_stream(data_stream, self.items())
+            print(f"Successfully saved to {filename}")
+            print(f"File size: {file.size()} bytes")
+        except Exception as e:
+            print(f"Error during saving: {e}")
         
         file.close()
 
     def load_scene(self, filename):
         """Load the scene from a file"""
+        import os
+        
+        # Check if file exists
+        if not os.path.exists(filename):
+            print(f"Error: File {filename} does not exist")
+            return
+            
         file = QFile(filename)
         
         if not file.open(QIODevice.OpenModeFlag.ReadOnly):
+            print(f"Error: Could not open file {filename} for reading")
             return
         
+        # Clear existing items except guidelines
+        items_to_remove = []
+        for item in self.items():
+            if item != self.hor_guide_line and item != self.ver_guide_line:
+                items_to_remove.append(item)
+        
+        for item in items_to_remove:
+            self.removeItem(item)
+        
         data_stream = QDataStream(file)
-        self.read_items_from_data_stream(data_stream, False)
+        
+        # Set compatible version
+        data_stream.setVersion(QDataStream.Version.Qt_5_12)
+        
+        print(f"Reading from file: {filename}")
+        print(f"File size: {file.size()} bytes")
+        print(f"Stream status: {data_stream.status()}")
+        
+        # Try to read the first byte to check if the file is valid
+        if file.size() > 0:
+            try:
+                pos_before = data_stream.device().pos()
+                test_read = data_stream.readInt32()
+                pos_after = data_stream.device().pos()
+                print(f"Test read: {test_read}, bytes read: {pos_after - pos_before}")
+                
+                # Rewind to start
+                data_stream.device().seek(0)
+            except Exception as e:
+                print(f"Error reading from file: {e}")
+        
+        try:
+            self.read_items_from_data_stream(data_stream, False)
+            print("Successfully read items from data stream")
+        except Exception as e:
+            print(f"Error during reading items: {e}")
         
         file.close()

@@ -191,17 +191,19 @@ class MainWindow(QMainWindow):
     def on_actionSave_triggered(self):
         """Handle save button click"""
         filename, _ = QFileDialog.getSaveFileName(
-            self, "Save File", "", "PainterApp (*.pa)")
+            self, "Save File", "", "PainterApp (*.pa);;All Files (*)")
         if filename:
+            if not filename.endswith('.pa'):
+                filename += '.pa'
             self.scene.save_scene(filename)
 
     def on_actionLoad_triggered(self):
         """Handle load button click"""
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Open File", "", "PainterApp (*.pa)")
+            self, "Open File", "", "PainterApp (*.pa);;All Files (*)")
         if filename:
             self.scene.load_scene(filename)
-    
+            
     def on_actionCopy_triggered(self):
         """Copy selected items"""
         pass

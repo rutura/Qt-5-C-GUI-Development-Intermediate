@@ -1,0 +1,61 @@
+from PySide6.QtWidgets import QGraphicsRectItem
+from PySide6.QtCore import QRectF
+from PySide6.QtGui import QPainter
+
+from resizablehandlerect import ResizableHandleRect
+
+class ResizableEllipseItem(QGraphicsRectItem, ResizableHandleRect):
+    """
+    An ellipse item that can be resized using handles on its corners.
+    """
+    def __init__(self):
+        """
+        Initialize the resizable ellipse item.
+        """
+        QGraphicsRectItem.__init__(self)
+        ResizableHandleRect.__init__(self)
+        self.setOwnerItem(self)
+    
+    def boundingRect(self):
+        """
+        Get the bounding rectangle of the item.
+        
+        Returns:
+            QRectF: The bounding rectangle
+        """
+        return self.selectorFrameBounds()
+    
+    def paint(self, painter, option, widget):
+        """
+        Paint the item.
+        
+        Args:
+            painter: QPainter
+            option: QStyleOptionGraphicsItem
+            widget: QWidget
+        """
+        painter.save()
+        painter.setBrush(self.brush())
+        painter.drawEllipse(self.rect())
+        self.drawHandlesIfNecessary()
+        painter.restore()
+    
+    def selectorFrameBounds(self):
+        """
+        Get the bounds of the selector frame.
+        
+        Returns:
+            QRectF: The bounds rectangle
+        """
+        return self.rect()
+    
+    def setSelectorFrameBounds(self, bounds_rect):
+        """
+        Set the bounds of the selector frame.
+        
+        Args:
+            bounds_rect: QRectF with the new bounds
+        """
+        self.prepareGeometryChange()
+        self.setRect(bounds_rect)
+        self.update()

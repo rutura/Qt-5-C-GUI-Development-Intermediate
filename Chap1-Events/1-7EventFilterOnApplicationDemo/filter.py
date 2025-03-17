@@ -15,8 +15,8 @@ class Filter(QObject):
             bool: True if the event is handled and should be filtered out, 
                   False to allow further processing
         """
-        if (event.type() == QEvent.MouseButtonPress or 
-            event.type() == QEvent.MouseButtonDblClick):
+        if (event.type() == QEvent.Type.MouseButtonPress or 
+            event.type() == QEvent.Type.MouseButtonDblClick):
             
             print("Event hijacked in filter")
             # return True  # Event handled, no need to notify original destination

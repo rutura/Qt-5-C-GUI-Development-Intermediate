@@ -4,7 +4,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QUrl
 from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
 from widget import Widget
-from models import PersonListModel
+from models import PersonTableModel
 
 def run_widget():
     """Run the application in Qt Widgets mode"""
@@ -22,7 +22,7 @@ def run_quick():
     engine = QQmlApplicationEngine()
     
     # Create model and set as context property
-    model = PersonListModel()
+    model = PersonTableModel()
     engine.rootContext().setContextProperty("personListModel", model)
     
     # Load QML file

@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QTableView
 from PySide6.QtCore import Qt
 from ui_widget import Ui_Widget
-from models import PersonModel
+from models import PersonTableModel
 
 class Widget(QWidget):
     """Main application widget using MVC pattern"""
@@ -11,7 +11,7 @@ class Widget(QWidget):
         self.ui.setupUi(self)
         
         # Create model
-        self.model = PersonModel()
+        self.model = PersonTableModel()
         
         # Set up view
         self.ui.tableWidget.hide()  # Hide the original QTableWidget

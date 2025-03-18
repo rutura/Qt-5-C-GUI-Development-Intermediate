@@ -11,7 +11,7 @@ from PySide6.QtCore import QUrl
 
 import resource_rc  # Import the compiled resources
 
-def run_widgets():
+def run_widget():
     """Run the Qt Widgets implementation"""
     app = QApplication(sys.argv)
     window = Widget()
@@ -46,8 +46,16 @@ def run_quick():
     return app.exec()
 
 def main():
-    """Main function to handle implementation"""
-    return run_quick()
+    """Main entry point with option to choose which version to run"""
+    
+    mode = input("Select mode (1 for Widgets, 2 for Quick): ")
+    
+    if mode == "2":
+        print("Running Qt Quick version")
+        return run_quick()
+    else:
+        print("Running Qt Widgets version")
+        return run_widget()
 
 if __name__ == "__main__":
     sys.exit(main())

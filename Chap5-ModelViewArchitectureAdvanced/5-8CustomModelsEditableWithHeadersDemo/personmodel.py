@@ -1,7 +1,13 @@
-from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex
+from PySide6.QtCore import QAbstractListModel, Qt, QModelIndex, QByteArray
 from person import Person
+import weakref
 
 class PersonModel(QAbstractListModel):
+    # Define custom roles
+    NameRole = Qt.UserRole + 1
+    ColorRole = Qt.UserRole + 2
+    AgeRole = Qt.UserRole + 3
+    
     def __init__(self, parent=None):
         super().__init__(parent)
         
@@ -15,11 +21,29 @@ class PersonModel(QAbstractListModel):
         self.persons.append(Person("Victor Trunk", "dodgerblue", 30))
         self.persons.append(Person("Ariel Geeny", "blue", 33))
         self.persons.append(Person("Knut Vikran", "lightblue", 26))
+        
+        # Connect to each person's signals to emit dataChanged
+        for i, person in enumerate(self.persons):
+            person.namesChanged.connect(lambda name, row=i: self._on_person_data_changed(row))
+            person.favoriteColorChanged.connect(lambda color, row=i: self._on_person_data_changed(row))
+            person.ageChanged.connect(lambda age, row=i: self._on_person_data_changed(row))
     
     def __del__(self):
         # Clean up Person objects
-        for person in self.persons:
-            person.deleteLater()
+        # Using a safer approach to avoid accessing already deleted objects
+        if hasattr(self, 'persons'):
+            for person in self.persons:
+                try:
+                    if person is not None and not person.isDestroyed():
+                        person.deleteLater()
+                except (RuntimeError, ReferenceError):
+                    # Object already deleted or reference lost, skip it
+                    pass
+    
+    def _on_person_data_changed(self, row):
+        """Handle when a person's data changes"""
+        index = self.index(row, 0)
+        self.dataChanged.emit(index, index)
     
     def rowCount(self, parent=None):
         """Return the number of rows in the model"""
@@ -43,20 +67,39 @@ class PersonModel(QAbstractListModel):
         
         if role == Qt.ToolTipRole:
             return person.names()
+        
+        if role == self.NameRole:
+            return person.names()
+            
+        if role == self.ColorRole:
+            return person.favoriteColor()
+            
+        if role == self.AgeRole:
+            return person.age()
             
         return None
     
     def setData(self, index, value, role=Qt.EditRole):
         """Set data for the specified index and role"""
-        if not index.isValid():
+        if not index.isValid() or index.row() < 0 or index.row() >= len(self.persons):
             return False
         
         person = self.persons[index.row()]
         something_changed = False
         
-        if role == Qt.EditRole:
+        if role == Qt.EditRole or role == self.NameRole:
             if person.names() != value:
                 person.setNames(value)
+                something_changed = True
+        
+        if role == self.ColorRole:
+            if person.favoriteColor() != value:
+                person.setFavoriteColor(value)
+                something_changed = True
+        
+        if role == self.AgeRole:
+            if person.age() != value:
+                person.setAge(value)
                 something_changed = True
         
         if something_changed:
@@ -82,3 +125,13 @@ class PersonModel(QAbstractListModel):
             return super().flags(index)
         
         return super().flags(index) | Qt.ItemIsEditable
+    
+    def roleNames(self):
+        """Return the role names for QML"""
+        roles = {
+            self.NameRole: QByteArray(b"name"),
+            self.ColorRole: QByteArray(b"favoriteColor"),
+            self.AgeRole: QByteArray(b"age"),
+            Qt.EditRole: QByteArray(b"edit")
+        }
+        return roles

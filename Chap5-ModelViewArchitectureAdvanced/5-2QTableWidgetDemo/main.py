@@ -37,8 +37,6 @@ def run_quick():
 
 def main():
     """Main entry point with option to choose which version to run"""
-    # For testing/development, you could use command line arguments
-    # or a simple input prompt to choose the mode
     
     mode = input("Select mode (1 for Widgets, 2 for Quick): ")
     

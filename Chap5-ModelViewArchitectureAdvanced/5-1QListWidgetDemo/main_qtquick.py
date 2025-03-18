@@ -1,29 +1,17 @@
 import sys
 from pathlib import Path
-from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton, QVBoxLayout, QDialog
-
-from widget import Widget
-
-from fruit_controller import FruitController, FruitModel
 from PySide6.QtGui import QGuiApplication
 from PySide6.QtQml import QQmlApplicationEngine
 from PySide6.QtCore import QUrl
 
+from fruit_controller import FruitController, FruitModel
 import resource_rc  # Import the compiled resources
 
-def run_widgets():
-    """Run the Qt Widgets implementation"""
-    app = QApplication(sys.argv)
-    window = Widget()
-    window.show()
-    return app.exec()
-
-
-def run_quick():
-    """Run the Qt Quick implementation"""
+def main():
+    # Create application
     app = QGuiApplication(sys.argv)
     
-    # Create QML engine
+    # Create controller, model and QML engine
     engine = QQmlApplicationEngine()
     
     # Create model and controller
@@ -43,11 +31,8 @@ def run_quick():
         print("Error: Could not load QML file")
         sys.exit(-1)
     
+    # Run the event loop
     return app.exec()
-
-def main():
-    """Main function to handle implementation"""
-    return run_quick()
 
 if __name__ == "__main__":
     sys.exit(main())

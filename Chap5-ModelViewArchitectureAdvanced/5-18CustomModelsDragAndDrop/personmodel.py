@@ -72,16 +72,22 @@ class PersonModel(QAbstractListModel):
 
     def dropMimeData(self, data, action, row, column, parent):
         """Handle drop operations."""
-        if not data.hasText():
+        if isinstance(data, dict) and "text" in data:
+            # For QML integration
+            text = data["text"]
+        elif hasattr(data, "hasText") and data.hasText():
+            # For Qt Widgets
+            text = data.text()
+        else:
             return False
 
         if parent.isValid():
             # Overwrite existing item
-            self.setData(parent, data.text())
+            self.setData(parent, text)
         else:
             # Add new item at the end
             self.insertRows(self.rowCount())
-            self.setData(self.index(self.rowCount() - 1), data.text())
+            self.setData(self.index(self.rowCount() - 1), text)
 
         return True
 
@@ -94,3 +100,7 @@ class PersonModel(QAbstractListModel):
                 Qt.ItemIsEditable | 
                 Qt.ItemIsDragEnabled | 
                 Qt.ItemIsDropEnabled)
+                
+    def roleNames(self):
+        """Define role names for QML."""
+        return {Qt.DisplayRole: b"display"}

@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Controls.Basic
 
 ApplicationWindow {
     id: window
@@ -24,18 +23,21 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 text: "ListView [CAN DRAG] [CAN DROP]"
                 horizontalAlignment: Text.AlignHCenter
+                font.bold: true
             }
 
             Label {
                 Layout.fillWidth: true
                 text: "TableView [CAN DRAG] [CAN'T DROP]"
                 horizontalAlignment: Text.AlignHCenter
+                font.bold: true
             }
 
             Label {
                 Layout.fillWidth: true
                 text: "TreeView [CAN'T DRAG] [CAN DROP]"
                 horizontalAlignment: Text.AlignHCenter
+                font.bold: true
             }
         }
 
@@ -45,7 +47,7 @@ ApplicationWindow {
             Layout.fillHeight: true
             spacing: 10
 
-            // List View with drag and drop capabilities
+            // List View - CAN DRAG, CAN DROP
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -57,89 +59,74 @@ ApplicationWindow {
                     anchors.fill: parent
                     anchors.margins: 2
                     model: itemModel
-                    spacing: 1
+                    spacing: 2
                     
-                    // Enable drop
+                    // Enable drag and drop
                     property int draggedItemIndex: -1
                     
+                    // This ListView can accept drops
                     DropArea {
                         anchors.fill: parent
-                        
-                        onEntered: function(drag) {
-                            listView.draggedItemIndex = drag.source.itemIndex
-                        }
-                        
-                        onDropped: function(drop) {
-                            var dropIndex = listView.indexAt(drop.x, drop.y)
-                            if (dropIndex === -1) dropIndex = listView.count - 1
-                            dragDropController.moveItem(listView.draggedItemIndex, dropIndex)
-                            listView.draggedItemIndex = -1
+                        onDropped: {
+                            var dropIndex = listView.indexAt(listView.width/2, drop.y)
+                            if (dropIndex === -1) dropIndex = listView.count
+                            
+                            if (drag.source.itemIndex !== undefined) {
+                                dragDropController.moveItem(drag.source.itemIndex, dropIndex)
+                            }
                         }
                     }
 
-                    delegate: Item {
-                        id: listItem
-                        width: listView.width
+                    delegate: Rectangle {
+                        id: listDelegate
+                        width: ListView.view.width - 4
                         height: 40
+                        color: "#ffffff"
+                        border.color: "#e0e0e0"
+                        border.width: 1
                         
                         property int itemIndex: index
-
-                        Rectangle {
-                            id: listRect
+                        property bool canDragItem: model.canDrag === true
+                        property bool canDropItem: model.canDrop === true
+                        
+                        Text {
                             anchors.fill: parent
-                            anchors.margins: 1
-                            color: listDragArea.containsMouse ? "#f0f0f0" : "#ffffff"
-                            border.color: "#eeeeee"
-                            border.width: 1
-
-                            Text {
-                                anchors.fill: parent
-                                anchors.leftMargin: 10
-                                verticalAlignment: Text.AlignVCenter
-                                text: model.display
-                                elide: Text.ElideRight
-                            }
+                            anchors.leftMargin: 10
+                            verticalAlignment: Text.AlignVCenter
+                            text: model.display || ""
                         }
-
+                        
                         MouseArea {
-                            id: listDragArea
+                            id: dragArea
                             anchors.fill: parent
-                            hoverEnabled: true
-                            drag.target: model.canDrag ? listItem : undefined
+                            
+                            drag.target: canDragItem ? parent : undefined
+                            
+                            onPressed: {
+                                if (canDragItem) {
+                                    listView.draggedItemIndex = index
+                                    parent.grabToImage(function(result) {
+                                        parent.Drag.imageSource = result.url
+                                    }, Qt.size(parent.width, parent.height))
+                                }
+                            }
                             
                             onReleased: {
-                                if (model.canDrag) {
-                                    listItem.Drag.drop()
-                                }
-                                listItem.x = 0
-                                listItem.y = 0
+                                parent.Drag.drop()
+                                parent.x = 0
+                                parent.y = 0
                             }
                         }
-
-                        Drag.active: listDragArea.drag.active
-                        Drag.source: model.canDrag ? listItem : undefined
+                        
+                        Drag.active: dragArea.drag.active && canDragItem
+                        Drag.source: this
                         Drag.hotSpot.x: width / 2
                         Drag.hotSpot.y: height / 2
-                        
-                        states: [
-                            State {
-                                when: listDragArea.drag.active
-                                ParentChange {
-                                    target: listItem
-                                    parent: window.contentItem
-                                }
-                                AnchorChanges {
-                                    target: listItem
-                                    anchors.horizontalCenter: undefined
-                                    anchors.verticalCenter: undefined
-                                }
-                            }
-                        ]
                     }
                 }
             }
 
-            // Table View
+            // TableView - CAN DRAG, CAN'T DROP
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -151,76 +138,65 @@ ApplicationWindow {
                     anchors.fill: parent
                     anchors.margins: 2
                     model: itemModel
+                    
                     rowSpacing: 1
                     columnSpacing: 1
-
-                    // Define a column for the display text
-                    TableViewColumn {
-                        title: "Display"
-                        role: "display"
-                        width: tableView.width
+                    
+                    columnWidthProvider: function(column) {
+                        return width
                     }
-
-                    delegate: Item {
-                        id: tableItem
-                        implicitWidth: tableView.width
+                    
+                    rowHeightProvider: function(row) {
+                        return 40
+                    }
+                    
+                    delegate: Rectangle {
+                        implicitWidth: tableView.width - 4
                         implicitHeight: 40
+                        color: "#ffffff"
+                        border.color: "#e0e0e0"
+                        border.width: 1
                         
-                        property int itemIndex: row
-
-                        Rectangle {
+                        property int itemIndex: TableView.row
+                        property bool canDragItem: model && model.canDrag === true
+                        
+                        Text {
                             anchors.fill: parent
-                            anchors.margins: 1
-                            color: tableDragArea.containsMouse ? "#f0f0f0" : "#ffffff"
-                            border.color: "#eeeeee"
-                            border.width: 1
-
-                            Text {
-                                anchors.fill: parent
-                                anchors.leftMargin: 10
-                                verticalAlignment: Text.AlignVCenter
-                                text: display
-                                elide: Text.ElideRight
-                            }
+                            anchors.leftMargin: 10
+                            verticalAlignment: Text.AlignVCenter
+                            text: model ? model.display || "" : ""
                         }
-
+                        
                         MouseArea {
                             id: tableDragArea
                             anchors.fill: parent
-                            hoverEnabled: true
-                            drag.target: canDrag ? tableItem : undefined
+                            
+                            drag.target: canDragItem ? parent : undefined
+                            
+                            onPressed: {
+                                if (canDragItem) {
+                                    parent.grabToImage(function(result) {
+                                        parent.Drag.imageSource = result.url
+                                    }, Qt.size(parent.width, parent.height))
+                                }
+                            }
                             
                             onReleased: {
-                                // No drop allowed for table items
-                                tableItem.x = 0
-                                tableItem.y = 0
+                                parent.Drag.drop()
+                                parent.x = 0
+                                parent.y = 0
                             }
                         }
-
-                        Drag.active: tableDragArea.drag.active
-                        Drag.source: canDrag ? tableItem : undefined
+                        
+                        Drag.active: tableDragArea.drag.active && canDragItem
+                        Drag.source: this
                         Drag.hotSpot.x: width / 2
                         Drag.hotSpot.y: height / 2
-                        
-                        states: [
-                            State {
-                                when: tableDragArea.drag.active
-                                ParentChange {
-                                    target: tableItem
-                                    parent: window.contentItem
-                                }
-                                AnchorChanges {
-                                    target: tableItem
-                                    anchors.horizontalCenter: undefined
-                                    anchors.verticalCenter: undefined
-                                }
-                            }
-                        ]
                     }
                 }
             }
 
-            // Tree View
+            // TreeView - CAN'T DRAG, CAN DROP
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -229,13 +205,20 @@ ApplicationWindow {
                 
                 DropArea {
                     anchors.fill: parent
-                    
                     onDropped: function(drop) {
-                        var dropIndex = treeView.currentIndex != -1 ? treeView.currentIndex : itemModel.rowCount() - 1
-                        dragDropController.moveItem(drop.source.itemIndex, dropIndex)
+                        var dropY = drop.y
+                        var dropIndex = Math.floor(dropY / 40)
+                        
+                        // Clamp to valid range
+                        if (dropIndex < 0) dropIndex = 0
+                        if (dropIndex >= itemModel.rowCount()) dropIndex = itemModel.rowCount()
+                        
+                        if (drop.source && drop.source.itemIndex !== undefined) {
+                            dragDropController.moveItem(drop.source.itemIndex, dropIndex)
+                        }
                     }
                 }
-
+                
                 TreeView {
                     id: treeView
                     anchors.fill: parent
@@ -244,19 +227,18 @@ ApplicationWindow {
                     
                     delegate: TreeViewDelegate {
                         id: treeDelegate
-                        
                         Rectangle {
-                            color: "#ffffff"
-                            border.color: "#eeeeee"
-                            border.width: 1
-                            implicitWidth: treeView.width
+                            implicitWidth: treeView.width - 4
                             implicitHeight: 40
+                            color: "#ffffff"
+                            border.color: "#e0e0e0"
+                            border.width: 1
                             
                             Text {
                                 anchors.fill: parent
-                                anchors.leftMargin: 10 + (treeDelegate.depth * 20) // Indent based on depth
+                                anchors.leftMargin: 10 + (treeDelegate.depth * 20)
                                 verticalAlignment: Text.AlignVCenter
-                                text: model.display || ""
+                                text: model ? model.display || "" : ""
                                 elide: Text.ElideRight
                             }
                         }

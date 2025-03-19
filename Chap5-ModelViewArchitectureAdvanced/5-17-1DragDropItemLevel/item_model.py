@@ -1,8 +1,8 @@
-from PySide6.QtCore import Qt, QAbstractListModel, QModelIndex, Property, Slot
+from PySide6.QtCore import Qt, QModelIndex
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 
 class ItemModel(QStandardItemModel):
-    """Extended standard item model with drag/drop property roles"""
+    """Extended standard item model with drag/drop properties"""
     
     # Define custom roles
     CanDragRole = Qt.UserRole + 1
@@ -42,22 +42,16 @@ class ItemModel(QStandardItemModel):
         self.appendRow(item1)
         self.appendRow(item2)
         self.appendRow(item3)
+        
+        # Debug item data
+        for i in range(self.rowCount()):
+            item = self.item(i)
+            print(f"Item {i}: text={item.text()}, canDrag={item.data(ItemModel.CanDragRole)}, canDrop={item.data(ItemModel.CanDropRole)}")
     
     def roleNames(self):
         """Define the role names for QML access"""
         roles = super().roleNames()
         roles[ItemModel.CanDragRole] = b"canDrag"
         roles[ItemModel.CanDropRole] = b"canDrop"
+        roles[Qt.DisplayRole] = b"display"
         return roles
-    
-    def data(self, index, role=Qt.DisplayRole):
-        """Override to provide custom role data"""
-        if not index.isValid():
-            return None
-            
-        if role == ItemModel.CanDragRole:
-            return super().data(index, ItemModel.CanDragRole)
-        elif role == ItemModel.CanDropRole:
-            return super().data(index, ItemModel.CanDropRole)
-            
-        return super().data(index, role)

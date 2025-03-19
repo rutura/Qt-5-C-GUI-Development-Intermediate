@@ -416,7 +416,7 @@ ApplicationWindow {
                 }
             }
             
-            // TreeView (Using ListView with hierarchy simulation)
+            // TreeView 
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true

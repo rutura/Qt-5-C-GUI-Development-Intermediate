@@ -2,7 +2,7 @@ import sys
 import os
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QUrl
-from PySide6.QtQml import QQmlApplicationEngine, qmlRegisterType
+from PySide6.QtQml import QQmlApplicationEngine
 from widget import Widget
 from models import PersonTableModel
 

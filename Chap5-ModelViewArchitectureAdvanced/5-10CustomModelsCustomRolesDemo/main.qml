@@ -272,7 +272,7 @@ ApplicationWindow {
                 }
             }
             
-            // TreeView (Simulated with ListView)
+            // TreeView
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true

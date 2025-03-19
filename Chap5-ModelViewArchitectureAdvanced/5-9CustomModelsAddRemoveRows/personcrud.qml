@@ -202,7 +202,7 @@ ApplicationWindow {
                         id: horizontalHeader
                         syncView: tableView
                         model: ["Name", "Age", "Favorite Color"]
-                        visible: false  // Hide this as we're using our custom header above
+                        visible: false 
                     }
                     
                     TableView {
@@ -321,7 +321,7 @@ ApplicationWindow {
                 }
             }
             
-            // For TreeView, use a ListView with custom indentation (since TreeView is challenging in Qt 6)
+            // TreeView
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true

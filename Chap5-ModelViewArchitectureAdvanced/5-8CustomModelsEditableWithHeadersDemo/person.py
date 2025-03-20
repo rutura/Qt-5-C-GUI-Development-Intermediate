@@ -10,6 +10,7 @@ class Person(QObject):
         self._names = names
         self._favorite_color = favorite_color
         self._age = age
+        self._destroyed = False
     
     def names(self):
         """Get the person's name"""
@@ -47,3 +48,10 @@ class Person(QObject):
         
         self._age = age
         self.ageChanged.emit(self._age)
+    
+    def isDestroyed(self):
+        """Check if the object has been destroyed"""
+        return self._destroyed
+    
+    def __del__(self):
+        self._destroyed = True

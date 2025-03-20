@@ -1,8 +1,7 @@
-from PySide6.QtCore import (
-    QAbstractItemModel, QModelIndex, Qt, QFile, QIODevice, QTextStream
-)
-from PySide6.QtGui import QColor
+import os
+from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QByteArray, Slot
 from person import Person
+import resources_rc
 
 class PersonModel(QAbstractItemModel):
     def __init__(self, parent=None):
@@ -12,18 +11,23 @@ class PersonModel(QAbstractItemModel):
         :param parent: Parent QObject
         """
         super().__init__(parent)
-        # Create root person with column headers
-        self.root_person = Person(["Names", "Profession"])
+        self.root_person = Person("Names", "Profession")
+        self.filename = ":/data/familytree1.txt"
         self.read_file()
-
-    def get_person_from_index(self, index):
-        """
-        Get Person object from a model index
         
-        :param index: Model index
-        :return: Person object
+        # For Qt Quick TreeView, expose role names
+        self._role_names = {
+            Qt.DisplayRole: QByteArray(b'display'),
+            Qt.UserRole: QByteArray(b'profession'),
+        }
+
+    def roleNames(self):
         """
-        return index.internalPointer() if index.isValid() else self.root_person
+        Override roleNames to provide mapping for QML
+        
+        :return: Dictionary of role names
+        """
+        return self._role_names
 
     def index(self, row, column, parent=QModelIndex()):
         """
@@ -80,7 +84,7 @@ class PersonModel(QAbstractItemModel):
         :param parent: Parent model index
         :return: Number of columns
         """
-        return self.root_person.column_count()
+        return 2
 
     def data(self, index, role=Qt.DisplayRole):
         """
@@ -93,11 +97,64 @@ class PersonModel(QAbstractItemModel):
         if not index.isValid():
             return None
 
-        if role in (Qt.DisplayRole, Qt.EditRole):
-            person = index.internalPointer()
-            return person.data(index.column())
-
+        person = index.internalPointer()
+        
+        if role == Qt.DisplayRole and index.column() == 0:
+            return person.data(0)
+        elif role == Qt.UserRole or (role == Qt.DisplayRole and index.column() == 1):
+            return person.data(1)
+            
         return None
+
+    def setData(self, index, value, role=Qt.EditRole):
+        """
+        Set data for a given index and role
+        
+        :param index: Model index
+        :param value: New value
+        :param role: Edit role
+        :return: True if successful, False otherwise
+        """
+        if not index.isValid():
+            return False
+            
+        person = index.internalPointer()
+        
+        if role == Qt.EditRole:
+            if index.column() == 0:
+                person.set_name(value)
+                self.dataChanged.emit(index, index, [Qt.DisplayRole])
+                return True
+            elif index.column() == 1:
+                person.set_profession(value)
+                self.dataChanged.emit(index, index, [Qt.DisplayRole, Qt.UserRole])
+                return True
+                
+        return False
+    
+    @Slot(int, str)
+    def editName(self, row, name):
+        """
+        Edit the name of a person at a specific row
+        
+        :param row: Row of the person
+        :param name: New name
+        """
+        index = self.index(row, 0, QModelIndex())
+        if index.isValid():
+            self.setData(index, name)
+    
+    @Slot(int, str)
+    def editProfession(self, row, profession):
+        """
+        Edit the profession of a person at a specific row
+        
+        :param row: Row of the person
+        :param profession: New profession
+        """
+        index = self.index(row, 1, QModelIndex())
+        if index.isValid():
+            self.setData(index, profession)
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         """
@@ -109,7 +166,7 @@ class PersonModel(QAbstractItemModel):
         :return: Header data
         """
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return self.root_person.data(section)
+            return "Name" if section == 0 else "Profession"
         return None
 
     def flags(self, index):
@@ -121,109 +178,24 @@ class PersonModel(QAbstractItemModel):
         """
         if not index.isValid():
             return Qt.NoItemFlags
-        return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
-
-    def setData(self, index, value, role=Qt.EditRole):
-        """
-        Set data for a given index
-        
-        :param index: Model index
-        :param value: New value
-        :param role: Edit role
-        :return: True if successful
-        """
-        if role != Qt.EditRole:
-            return False
-
-        person = index.internalPointer()
-        result = person.set_data(index.column(), value)
-
-        if result:
-            self.dataChanged.emit(index, index, [role])
-
-        return result
-
-    def insertColumns(self, position, columns, parent=QModelIndex()):
-        """
-        Insert columns at a specific position
-        
-        :param position: Position to insert columns
-        :param columns: Number of columns to insert
-        :param parent: Parent model index
-        :return: True if successful
-        """
-        parent_person = parent.internalPointer() if parent.isValid() else self.root_person
-
-        self.beginInsertColumns(parent, position, position + columns - 1)
-        success = parent_person.insert_columns(position, columns)
-        self.endInsertColumns()
-
-        return success
-
-    def removeColumns(self, position, columns, parent=QModelIndex()):
-        """
-        Remove columns at a specific position
-        
-        :param position: Position to start removing columns
-        :param columns: Number of columns to remove
-        :param parent: Parent model index
-        :return: True if successful
-        """
-        parent_person = parent.internalPointer() if parent.isValid() else self.root_person
-
-        self.beginRemoveColumns(parent, position, position + columns - 1)
-        success = parent_person.remove_columns(position, columns)
-        self.endRemoveColumns()
-
-        return success
-
-    def insertRows(self, position, rows, parent=QModelIndex()):
-        """
-        Insert rows at a specific position
-        
-        :param position: Position to insert rows
-        :param rows: Number of rows to insert
-        :param parent: Parent model index
-        :return: True if successful
-        """
-        parent_person = self.get_person_from_index(parent)
-
-        self.beginInsertRows(parent, position, position + rows - 1)
-        success = parent_person.insert_children(position, rows, self.columnCount())
-        self.endInsertRows()
-
-        return success
-
-    def removeRows(self, position, rows, parent=QModelIndex()):
-        """
-        Remove rows at a specific position
-        
-        :param position: Position to start removing rows
-        :param rows: Number of rows to remove
-        :param parent: Parent model index
-        :return: True if successful
-        """
-        parent_person = self.get_person_from_index(parent)
-
-        self.beginRemoveRows(parent, position, position + rows - 1)
-        success = parent_person.remove_children(position, rows)
-        self.endRemoveRows()
-
-        return success
+            
+        # Make items editable
+        return super().flags(index) | Qt.ItemIsEditable
 
     def read_file(self):
         """
         Read and parse the family tree file
         Parse the indentation-based hierarchical text file
         """
-        filename = ":/data/familytree1.txt"
-        file = QFile(filename)
+        last_indentation = 0
+        last_parent = self.root_person
+        last_person = None
+
+        # Use QFile for resource file
+        from PySide6.QtCore import QFile, QIODevice, QTextStream
+        file = QFile(self.filename)
         
         if file.open(QIODevice.ReadOnly | QIODevice.Text):
-            last_indentation = 0
-            last_parent = self.root_person
-            last_person = None
-
             text_stream = QTextStream(file)
             
             while not text_stream.atEnd():
@@ -234,18 +206,15 @@ class PersonModel(QAbstractItemModel):
 
                 diff_indent = current_indentation - last_indentation
 
-                # Create a new person with [names, profession]
-                person_data = [names, profession]
-
                 if diff_indent == 0:
                     # Sibling level
-                    person = Person(person_data, last_parent)
+                    person = Person(names, profession, last_parent)
                     last_parent.append_child(person)
                     last_person = person
                 elif diff_indent > 0:
                     # Child level
                     last_parent = last_person
-                    person = Person(person_data, last_parent)
+                    person = Person(names, profession, last_parent)
                     last_parent.append_child(person)
                     last_person = person
                 else:
@@ -254,7 +223,7 @@ class PersonModel(QAbstractItemModel):
                     for _ in range(iterations):
                         last_parent = last_parent.parent_person()
                     
-                    person = Person(person_data, last_parent)
+                    person = Person(names, profession, last_parent)
                     last_parent.append_child(person)
                     last_person = person
 

@@ -1,5 +1,5 @@
 import os
-from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
+from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt, QByteArray
 from person import Person
 import resources_rc
 
@@ -14,6 +14,20 @@ class PersonModel(QAbstractItemModel):
         self.root_person = Person("Names", "Profession")
         self.filename = ":/data/familytree1.txt"
         self.read_file()
+        
+        # For Qt Quick TreeView, expose role names
+        self._role_names = {
+            Qt.DisplayRole: QByteArray(b'display'),
+            Qt.UserRole: QByteArray(b'profession')
+        }
+
+    def roleNames(self):
+        """
+        Override roleNames to provide mapping for QML
+        
+        :return: Dictionary of role names
+        """
+        return self._role_names
 
     def index(self, row, column, parent=QModelIndex()):
         """
@@ -83,11 +97,14 @@ class PersonModel(QAbstractItemModel):
         if not index.isValid():
             return None
 
-        if role != Qt.DisplayRole:
-            return None
-
         person = index.internalPointer()
-        return person.data(index.column())
+        
+        if role == Qt.DisplayRole and index.column() == 0:
+            return person.data(0)
+        elif role == Qt.UserRole or (role == Qt.DisplayRole and index.column() == 1):
+            return person.data(1)
+            
+        return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         """

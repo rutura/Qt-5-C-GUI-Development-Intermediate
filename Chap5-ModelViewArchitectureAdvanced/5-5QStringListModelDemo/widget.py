@@ -4,40 +4,67 @@ from PySide6.QtCore import Slot, QModelIndex, QStringListModel
 from ui_widget import Ui_Widget
 
 class Widget(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, model=None, controller=None, parent=None):
         super().__init__(parent)
         self.ui = Ui_Widget()
         self.ui.setupUi(self)
         
-        # Get all available color names
-        self.color_list = QColor.colorNames()
+        # Store model and controller
+        self._model = model
+        self._controller = controller
         
-        # Create a string list model with the color names
-        self.model = QStringListModel(self.color_list, self)
+        # If no model provided, create one
+        if not self._model:
+            # Get all available color names
+            self.color_list = QColor.colorNames()
+            # Create a string list model with the color names
+            self._model = QStringListModel(self.color_list, self)
         
         # Set the model to the list view
-        self.ui.listView.setModel(self.model)
+        self.ui.listView.setModel(self._model)
         
-        # Connect the clicked signal to our slot
-        self.ui.listView.clicked.connect(self.on_listView_clicked)
+        # Connect the clicked signal
+        if self._controller:
+            self.ui.listView.clicked.connect(self._on_listView_clicked_with_controller)
+            self._controller.colorSelected.connect(self._on_color_selected)
+        else:
+            self.ui.listView.clicked.connect(self._on_listView_clicked_legacy)
+        
+        # Set initial color (first in the list if available)
+        if self._model.rowCount() > 0:
+            color_name = self._model.data(self._model.index(0, 0), 0)
+            self._update_color_display(color_name)
         
         # Set window title
-        self.setWindowTitle("Color Picker Demo")
+        self.setWindowTitle("Color Picker Demo (Qt Widgets)")
     
     @Slot(QModelIndex)
-    def on_listView_clicked(self, index):
-        """Handle list view item click to show the selected color"""
+    def _on_listView_clicked_with_controller(self, index):
+        """Handle list view item click using controller"""
+        if self._controller:
+            self._controller.selectColorByIndex(index)
+    
+    @Slot(str)
+    def _on_color_selected(self, color_name):
+        """Handle color selection from controller"""
+        self._update_color_display(color_name)
+    
+    @Slot(QModelIndex)
+    def _on_listView_clicked_legacy(self, index):
+        """Legacy method for backward compatibility"""
         # Get the color name from the model
-        color_name = self.model.data(index, role=0)  # DisplayRole is 0
+        color_name = self._model.data(index, 0)
+        self._update_color_display(color_name)
         
+        # Debug output
+        print("Selected color:", color_name)
+        print("--------------------->>> Model Internal String list", self._model.stringList())
+    
+    def _update_color_display(self, color_name):
+        """Update the color display with the given color"""
         # Create a pixmap filled with the selected color
         pixmap = QPixmap(self.ui.label.size())
         pixmap.fill(QColor(color_name))
         
         # Set the pixmap to the label
         self.ui.label.setPixmap(pixmap)
-        
-        # Debug output
-        print("Showing all the colors")
-        print("--------------------->>> Model Internal String list", self.model.stringList())
-        print("--------------------->>> Original External String list", self.color_list)

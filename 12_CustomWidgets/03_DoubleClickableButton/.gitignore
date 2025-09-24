@@ -1,0 +1,28 @@
+# Build directory
+build/
+
+# Qt-specific 
+*.pro.user
+*.qmake.stash
+Makefile*
+*.autosave
+
+# Object files and compilation artifacts
+*.o
+*.obj
+*.exe
+moc_*
+ui_*
+qrc_*
+
+# IDE-specific
+.vscode/
+.idea/
+
+# Python cache files
+__pycache__/
+*.pyc
+
+# Cache directories
+.cache/
+.cache/**/*

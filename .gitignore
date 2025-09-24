@@ -1,0 +1,73 @@
+# Build directories
+**/build/
+[Bb]uild*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+
+# Qt-specific
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.qmake.stash
+*.moc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+Makefile*
+*build-*
+*.autosave
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Debug files
+*.pdb
+*.ilk
+
+# IDE-specific
+.vscode/
+.idea/
+*.user
+.vs/
+CMakeLists.txt.user*
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+# Qt Creator generated files
+GeneratedFiles/
+*.Generated.cpp
+*.Generated.h
+
+# Temporary files
+*.swp
+*~
+
+# Python cache (for any Python tooling)
+__pycache__/
+*.py[cod]

@@ -13,7 +13,7 @@ Scene::Scene(QObject *parent) : QGraphicsScene(parent)
 
 void Scene::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 {
-     if(event->mimeData()->property("Key").canConvert(QMetaType::Int)){
+  if(event->mimeData()->property("Key").canConvert(QMetaType::Int)){
          event->acceptProposedAction();
      }else{
          QGraphicsScene::dragMoveEvent(event);
